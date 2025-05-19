@@ -30,16 +30,16 @@
                 android:layout_weight="1"
                 android:text="CLEAR"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnSubmit"
+                app:layout_constraintEnd_toStartOf="@+id/btnParse"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
-                android:id="@+id/btnSubmit"
+                android:id="@+id/btnParse"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="SUBMIT"
+                android:text="PARSE"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btnClear"
