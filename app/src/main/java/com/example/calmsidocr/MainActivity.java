@@ -13,6 +13,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.impl.utils.Exif;
+import androidx.exifinterface.media.ExifInterface;
+
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -34,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private Button btnCamera;
     private Button btnClear;
     private Button btnParse;
-    private TextView txtNote;
     private ImageView imgCapture;
     private LinearLayout linearResults;
+    private TextView txtResult;
     private ActivityResultLauncher<Uri> launcherCamera;
 
     // Non-view data
@@ -66,9 +69,9 @@ public class MainActivity extends AppCompatActivity {
         btnCamera = findViewById(R.id.btnCamera);
         btnClear = findViewById(R.id.btnClear);
         btnParse = findViewById(R.id.btnParse);
-        txtNote = findViewById(R.id.txtNote);
         imgCapture = findViewById(R.id.imageCapture);
         linearResults = findViewById(R.id.linearResults);
+        txtResult = findViewById(R.id.txtResultTest);
 
         launcherCamera = registerForActivityResult(
                 new ActivityResultContracts.TakePicture(),
@@ -106,7 +109,13 @@ public class MainActivity extends AppCompatActivity {
 
         btnParse.setOnClickListener(view -> {
             if (viewState != ViewState.PARSED) {
-                viewState = setViewVisibility(ViewState.PARSED);
+                try {
+                    ExifInterface exif = new ExifInterface(fileCapture);
+                    txtResult.setText(String.valueOf(exif.getRotationDegrees()));
+                    viewState = setViewVisibility(ViewState.PARSED);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -141,9 +150,10 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewState setViewVisibility(ViewState state) {
         btnCamera.setVisibility(state == ViewState.CLEARED ? View.VISIBLE : View.INVISIBLE);
-        txtNote.setVisibility(state == ViewState.CLEARED ? View.VISIBLE : View.INVISIBLE);
         imgCapture.setVisibility(state != ViewState.CLEARED ? View.VISIBLE : View.INVISIBLE);
         linearResults.setVisibility(state == ViewState.PARSED ? View.VISIBLE : View.INVISIBLE);
         return state;
     }
+
+
 }

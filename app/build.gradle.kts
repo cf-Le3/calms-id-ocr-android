@@ -44,6 +44,8 @@ dependencies {
     implementation(libs.github.glide)
     implementation(libs.text.recognition)
     implementation(libs.core.ktx)
+    implementation(libs.camera.core)
+    implementation(libs.camera.lifecycle)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
