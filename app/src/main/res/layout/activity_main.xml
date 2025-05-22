@@ -5,8 +5,8 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#80000000"
-    android:backgroundTint="#F2E9E9">
+    android:background="@color/black"
+    app:layout_constraintDimensionRatio='"3:4"'>
 
     <FrameLayout
         android:id="@+id/main"
@@ -20,27 +20,18 @@
             android:visibility="visible">
 
             <androidx.camera.view.PreviewView
-                android:id="@+id/viewCamera"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:id="@+id/previewCamera"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@android:color/holo_blue_dark"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="3:4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="invisible">
+                app:layout_constraintVertical_bias="0.25">
 
             </androidx.camera.view.PreviewView>
-
-            <View
-                android:id="@+id/viewBtnBG"
-                android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:background="#30000000"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btnCapture"
@@ -51,14 +42,15 @@
                 android:focusable="true"
                 app:backgroundTint="@color/white"
                 app:fabCustomSize="75dp"
-                app:layout_constraintBottom_toBottomOf="@+id/viewCamera"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.9"
+                app:layout_constraintTop_toBottomOf="@+id/previewCamera"
+                app:layout_constraintVertical_bias="0.4"
                 app:maxImageSize="35dp"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
-                app:srcCompat="@drawable/round_camera_alt_24" />
+                app:srcCompat="@drawable/round_camera_alt_24"
+                app:tint="@color/black" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -69,27 +61,32 @@
             tools:visibility="visible">
 
             <ImageView
-                android:id="@+id/imgCapture"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:id="@+id/imagePhoto"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="3:4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.25" />
 
             <LinearLayout
                 style="?android:attr/buttonBarStyle"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="#30000000"
+                android:layout_height="60dp"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0">
+                app:layout_constraintTop_toBottomOf="@+id/imagePhoto"
+                app:layout_constraintVertical_bias="0.0">
 
                 <Button
                     android:id="@+id/btnRetry"
                     style="@style/TransparentButton"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/btnRetry" />
 
@@ -97,7 +94,7 @@
                     android:id="@+id/btnSubmit"
                     style="@style/TransparentButton"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="@string/btnSubmit" />
             </LinearLayout>
