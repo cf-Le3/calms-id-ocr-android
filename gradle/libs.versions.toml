@@ -15,6 +15,10 @@ cameraCore = "1.4.2"
 cameraLifecycle = "1.4.2"
 
 [libraries]
+camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCore" }
+camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraCore" }
+camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraCore" }
+camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
 github-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
