@@ -1,7 +1,6 @@
 package com.example.calmsidocr;
 
 public enum ViewState {
-    CLEARED,
-    CAPTURED,
-    PARSED
+    BEFORE_CAPTURE,
+    AFTER_CAPTURE
 }
