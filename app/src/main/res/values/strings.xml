@@ -3,4 +3,7 @@
     <string name="btnRetry">Retry</string>
     <string name="btnSubmit">OK</string>
     <string name="descCapture">Capture Image</string>
+    <string name="txtResultLabel">RESULT</string>
+    <string name="txtNricLabel">NRIC</string>
+    <string name="txtPlaceholder">Lorem ipsum dolor sit amet</string>
 </resources>
