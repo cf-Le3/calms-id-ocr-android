@@ -6,8 +6,7 @@
         android:name="android.hardware.camera.any"
         android:required="true" />
 
-    <uses-permission
-        android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -19,12 +18,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CALMSIDOCR"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ResultActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -32,15 +31,14 @@
         </activity>
 
         <provider
-            android:authorities="com.example.calmsidocr.fileprovider"
             android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.calmsidocr.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>
