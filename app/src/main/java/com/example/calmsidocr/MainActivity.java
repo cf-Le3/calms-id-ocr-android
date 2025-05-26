@@ -1,5 +1,10 @@
 package com.example.calmsidocr;
 
+import static com.example.calmsidocr.Constants.KEY_FILE;
+import static com.example.calmsidocr.Constants.TAG_BUNDLE;
+import static com.example.calmsidocr.Constants.TAG_EVENT;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,26 +43,17 @@ public class MainActivity extends AppCompatActivity {
     // View data
     private PreviewView previewCamera;
     private FloatingActionButton btnCapture;
-    private Button btnRetry;
-    private Button btnSubmit;
-    private ImageView imagePhoto;
     private ViewGroup layoutResult;
 
     // CameraX
-    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
-    private ProcessCameraProvider cameraProvider;
-    private CameraSelector cameraSelector;
-    private Preview preview;
     private ImageCapture imageCapture;
     private Camera camera;
 
     // Non-view data
     private File fileCapture;
-    private static final String TAG_CALLBACK = "CALLBACK";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         // Standard activity setup.
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -71,36 +67,45 @@ public class MainActivity extends AppCompatActivity {
         // Bind View components.
         previewCamera = findViewById(R.id.previewCamera);
         btnCapture = findViewById(R.id.btnCapture);
-        btnRetry = findViewById(R.id.btnRetry);
-        btnSubmit = findViewById(R.id.btnSubmit);
-        imagePhoto = findViewById(R.id.imagePhoto);
         layoutResult = findViewById(R.id.layoutResult);
+        Button btnRetry = findViewById(R.id.btnRetry);
+        Button btnSubmit = findViewById(R.id.btnSubmit);
+        ImageView imagePhoto = findViewById(R.id.imagePhoto);
 
         setupCamera();
 
         btnCapture.setOnClickListener(view -> {
-            try {
-                fileCapture = getFilePath();
-                ImageCapture.OutputFileOptions outputFileOptions =
-                        new ImageCapture.OutputFileOptions.Builder(fileCapture)
-                                .build();
-                imageCapture.takePicture(outputFileOptions, ContextCompat.getMainExecutor(this),
-                        new ImageCapture.OnImageSavedCallback() {
-                            @Override
-                            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                                Glide.with(view.getContext()).load(fileCapture).into(imagePhoto);
-                                setViewVisibility(ViewState.AFTER_CAPTURE);
-                                Log.d(TAG_CALLBACK, "CALLBACK: takePicture onImageSaved");
-                            }
+            if (camera != null) {
+                try {
+                    fileCapture = getFilePath();
+                    ImageCapture.OutputFileOptions outputFileOptions =
+                            new ImageCapture.OutputFileOptions.Builder(fileCapture)
+                                    .build();
 
-                            @Override
-                            public void onError(@NonNull ImageCaptureException exception) {
-                                Log.w(TAG_CALLBACK, "CALLBACK: takePicture onError");
-                            }
-                        });
-                Log.d(TAG_CALLBACK, "CALLBACK: btnCapture onClick");
-            } catch (Exception e){
-                Log.e(TAG_CALLBACK, "EXCEPTION: btnCapture onClick");
+                    imageCapture.takePicture(outputFileOptions, ContextCompat.getMainExecutor(this),
+                            new ImageCapture.OnImageSavedCallback() {
+                                @Override
+                                public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                                    Glide.with(view.getContext()).load(fileCapture).into(imagePhoto);
+                                    setViewVisibility(ViewState.AFTER_CAPTURE);
+                                    Log.d(TAG_EVENT, "CALLBACK: takePicture onImageSaved");
+                                }
+                                @Override
+                                public void onError(@NonNull ImageCaptureException e) {
+                                    Log.e(TAG_EVENT, "ERROR: takePicture onError\n" + e);
+                                }
+                            });
+
+                    Log.d(TAG_EVENT, "CALLBACK: btnCapture onClick");
+                } catch (Exception e){
+                    Log.e(TAG_EVENT, "EXCEPTION: btnCapture onClick\n" + e);
+                }
+            } else {
+                Toast.makeText(
+                        this,
+                        "ERROR: Camera unavailable.",
+                        Toast.LENGTH_SHORT
+                ).show();
             }
         });
 
@@ -108,37 +113,41 @@ public class MainActivity extends AppCompatActivity {
             Glide.with(view.getContext()).clear(imagePhoto);
             setViewVisibility(ViewState.BEFORE_CAPTURE);
             fileCapture.delete();
-            Log.d(TAG_CALLBACK, "CALLBACK: btnRetry onClick");
+            Log.d(TAG_EVENT, "CALLBACK: btnRetry onClick");
         });
 
         btnSubmit.setOnClickListener(view -> {
-            Toast.makeText(this, (CharSequence) "Coming soon...", Toast.LENGTH_SHORT).show();
-            Log.d(TAG_CALLBACK, "CALLBACK: btnSubmit onClick");
+            Intent launchResultActivity = new Intent(view.getContext(), ResultActivity.class);
+            Log.d(TAG_BUNDLE, "MainActivity: " + fileCapture.getAbsolutePath());
+            launchResultActivity.putExtra(KEY_FILE, fileCapture.getAbsolutePath());
+            view.getContext().startActivity(launchResultActivity);
         });
 
-        Log.d(TAG_CALLBACK, "CALLBACK: MainActivity onCreate");
+        Log.d(TAG_EVENT, "CALLBACK: MainActivity onCreate");
     }
 
     private void setupCamera() {
-        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+        ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider
+                .getInstance(this);
+
         cameraProviderFuture.addListener(() -> {
+            CameraSelector cameraSelector = new CameraSelector.Builder()
+                    .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                    .build();
+            imageCapture = new ImageCapture.Builder()
+                    .setTargetRotation(this.getWindowManager().getDefaultDisplay().getRotation())
+                    .build();
+            Preview preview = new Preview.Builder()
+                    .build();
+            preview.setSurfaceProvider(previewCamera.getSurfaceProvider());
+
             try {
-                cameraProvider = cameraProviderFuture.get();
-                cameraSelector = new CameraSelector.Builder()
-                        .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                        .build();
-                imageCapture = new ImageCapture.Builder()
-                        .setTargetRotation(this.getWindowManager().getDefaultDisplay().getRotation())
-                        .build();
-                preview = new Preview.Builder()
-                        .build();
-                preview.setSurfaceProvider(previewCamera.getSurfaceProvider());
+                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
                 camera = cameraProvider.bindToLifecycle(
                         this, cameraSelector, imageCapture, preview);
-                Log.d(TAG_CALLBACK, "CALLBACK: cameraProviderFuture listener");
+                Log.d(TAG_EVENT, "CALLBACK cameraProviderFuture listener");
             } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-                Log.e(TAG_CALLBACK, "EXCEPTION: cameraProviderFuture listener");
+                Log.e(TAG_EVENT, "EXCEPTION: cameraProviderFuture listener\n" + e);
             }
         }, ContextCompat.getMainExecutor(this));
     }
