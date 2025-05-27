@@ -37,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-/** @noinspection ResultOfMethodCallIgnored*/
 public class MainActivity extends AppCompatActivity {
 
     // View data
@@ -112,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         btnRetry.setOnClickListener(view -> {
             Glide.with(view.getContext()).clear(imagePhoto);
             setViewVisibility(ViewState.BEFORE_CAPTURE);
-            fileCapture.delete();
+            Log.d(TAG_EVENT, "File deleted: " + fileCapture.delete());
             Log.d(TAG_EVENT, "CALLBACK: btnRetry onClick");
         });
 
