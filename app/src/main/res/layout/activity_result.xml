@@ -23,10 +23,10 @@
             style="@style/ResultLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/txtNricLabel" />
+            android:text="@string/txtDocIDLabel" />
 
         <TextView
-            android:id="@+id/txtNRICContent"
+            android:id="@+id/txtDocIDContent"
             style="@style/ResultContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
