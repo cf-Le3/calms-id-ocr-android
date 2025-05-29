@@ -2,87 +2,97 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/linearNRIC"
-        android:layout_width="match_parent"
+    <ScrollView
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/txtNRICLabel"
-            style="@style/ResultLabel"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/txtDocIDLabel" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/txtDocIDContent"
-            style="@style/ResultContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/txtPlaceholder" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/txtDocIDLabel"
+                style="@style/ResultLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/txtDocIDLabel" />
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearNRIC" />
+            <TextView
+                android:id="@+id/txtDocIDContent"
+                style="@style/ResultContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/txtPlaceholder" />
 
-    <LinearLayout
-        android:id="@+id/linearResult"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider">
+            <View
+                android:id="@+id/divider1"
+                style="@style/CustomDivider"
+                android:layout_width="match_parent"
+                android:background="?android:attr/listDivider" />
 
-        <TextView
-            android:id="@+id/txtResultLabel"
-            style="@style/ResultLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/txtResultLabel" />
+            <TextView
+                android:id="@+id/txtPhotoLabel"
+                style="@style/ResultLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/txtPhotoLabel" />
 
-        <TextView
-            android:id="@+id/txtResultContent"
-            style="@style/ResultContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/txtPlaceholder" />
-    </LinearLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearResult" />
+                <TextView
+                    android:id="@+id/txtPhotoContent"
+                    style="@style/ResultContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txtPlaceholder" />
+
+                <ImageView
+                    android:id="@+id/imagePhotoContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitCenter" />
+            </FrameLayout>
+
+            <View
+                android:id="@+id/divider2"
+                style="@style/CustomDivider"
+                android:layout_width="match_parent"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/txtResultLabel"
+                style="@style/ResultLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/txtResultLabel" />
+
+            <TextView
+                android:id="@+id/txtResultContent"
+                style="@style/ResultContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/txtPlaceholder" />
+
+            <View
+                android:id="@+id/divider3"
+                style="@style/CustomDivider"
+                android:layout_width="match_parent"
+                android:background="?android:attr/listDivider" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
