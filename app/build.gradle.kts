@@ -42,6 +42,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.github.glide)
     implementation(libs.text.recognition)
+    implementation(libs.face.detection)
     implementation(libs.camera.core)
     implementation(libs.camera.camera2)
     implementation(libs.camera.lifecycle)
