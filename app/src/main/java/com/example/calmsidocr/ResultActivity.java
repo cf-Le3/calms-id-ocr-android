@@ -130,7 +130,8 @@ public class ResultActivity extends AppCompatActivity {
         if (matNRIC.find()){
             return matNRIC.group();
         } else if (matPassport.find()) {
-            if (matPassport.group().length() <= 9) {return matPassport.group();}
+            String result = matPassport.group();
+            if (result.length() >= 3 && result.length() <= 9) {return result;}
         }
         return "";
     }
