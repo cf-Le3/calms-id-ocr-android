@@ -4,9 +4,12 @@ import static com.example.calmsidocr.Constants.KEY_FILE;
 import static com.example.calmsidocr.Constants.TAG_BUNDLE;
 import static com.example.calmsidocr.Constants.TAG_EVENT;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,9 +21,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.camera.core.Camera;
+import androidx.camera.core.CameraControl;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.FocusMeteringAction;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.MeteringPoint;
+import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -46,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     // CameraX
     private ImageCapture imageCapture;
-    private Camera camera;
+    private Camera camera = null;
 
     // Non-view data
     private File fileCapture;
@@ -57,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.root), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -72,6 +79,24 @@ public class MainActivity extends AppCompatActivity {
         ImageView imagePhoto = findViewById(R.id.imagePhoto);
 
         setupCamera();
+
+        if (camera != null) {
+            previewCamera.setOnTouchListener(new View.OnTouchListener() {
+                @SuppressLint("ClickableViewAccessibility")
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() != MotionEvent.ACTION_UP) {
+                        return true;
+                    }
+                    MeteringPointFactory factory = previewCamera.getMeteringPointFactory();
+                    MeteringPoint point = factory.createPoint(event.getX(), event.getY());
+                    FocusMeteringAction action = new FocusMeteringAction.Builder(point).build();
+                    CameraControl cameraControl = camera.getCameraControl();
+                    cameraControl.startFocusAndMetering(action);
+                    return true;
+                }
+            });
+        }
 
         btnCapture.setOnClickListener(view -> {
             if (camera != null) {
