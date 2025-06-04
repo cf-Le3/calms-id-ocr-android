@@ -6,5 +6,6 @@
     <string name="txtResultLabel">RESULT</string>
     <string name="txtDocIDLabel">DOCUMENT ID</string>
     <string name="txtPhotoLabel">PHOTO</string>
+    <string name="txtNameLabel">NAME</string>
     <string name="txtPlaceholder">Loading…</string>
 </resources>
