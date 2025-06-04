@@ -2,6 +2,7 @@ package com.example.calmsidocr;
 
 import static com.example.calmsidocr.Constants.KEY_FILE;
 import static com.example.calmsidocr.Constants.MSG_NA;
+import static com.example.calmsidocr.Constants.PAT_LICENSE;
 import static com.example.calmsidocr.Constants.PAT_NRIC;
 import static com.example.calmsidocr.Constants.PAT_PASSPORT;
 import static com.example.calmsidocr.Constants.TAG_BUNDLE;
@@ -27,15 +28,21 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.exifinterface.media.ExifInterface;
 
 import com.google.mlkit.vision.face.Face;
+import com.google.mlkit.vision.text.Text;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ResultActivity extends AppCompatActivity {
 
+    private TextView txtResult;
+    private TextView txtDocID;
+    private TextView txtName;
+    private TextView txtPhoto;
+    private ImageView imagePhotoContent;
     private File fileCapture;
 
     @Override
@@ -51,10 +58,11 @@ public class ResultActivity extends AppCompatActivity {
         });
 
         // Bind view components.
-        TextView txtResult = findViewById(R.id.txtResultContent);
-        TextView txtDocID = findViewById(R.id.txtDocIDContent);
-        TextView txtPhotoContent = findViewById(R.id.txtPhotoContent);
-        ImageView imagePhotoContent = findViewById(R.id.imagePhotoContent);
+        txtResult = findViewById(R.id.txtResultContent);
+        txtDocID = findViewById(R.id.txtDocIDContent);
+        txtName = findViewById(R.id.txtNameContent);
+        txtPhoto = findViewById(R.id.txtPhotoContent);
+        imagePhotoContent = findViewById(R.id.imagePhotoContent);
 
         String incoming = getIntent().getStringExtra(KEY_FILE);
         Log.d(TAG_BUNDLE, "ResultActivity: " + (incoming != null ? incoming : "null"));
@@ -67,10 +75,13 @@ public class ResultActivity extends AppCompatActivity {
 
                 imageParser.parseImageText()
                         .addOnSuccessListener(text -> {
-                            String result = text.getText();
-                            String documentID = getDocumentID(result);
-                            txtResult.setText(result);
-                            txtDocID.setText(!Objects.equals(documentID, "") ? documentID : MSG_NA);
+                            if (text != null) {
+                                handleTextResult(text);
+                            } else {
+                                txtResult.setText(MSG_NA);
+                                txtDocID.setText(MSG_NA);
+                                txtName.setText(MSG_NA);
+                            }
                             Log.d(TAG_EVENT, "CALLBACK: parseImageText SuccessListener");
                         })
                         .addOnFailureListener(e -> {
@@ -80,22 +91,16 @@ public class ResultActivity extends AppCompatActivity {
                 imageParser.extractFace()
                         .addOnSuccessListener(faces -> {
                             if (!faces.isEmpty()) {
-                                Rect maxBBox = null;
-                                int maxArea = 0;
-                                for (Face face : faces) {
-                                    Rect bBox = face.getBoundingBox();
-                                    int area = getBoundingBoxArea(bBox);
-                                    if (area > maxArea) {maxBBox = bBox; maxArea = area;}
-                                }
-                                assert maxBBox != null;
+                                Rect faceBoundingBox = getLargestBoundingBox(faces);
                                 try {
-                                    imagePhotoContent.setImageBitmap(getFaceBitmap(fileCapture, maxBBox));
-                                    txtPhotoContent.setVisibility(View.INVISIBLE);
+                                    imagePhotoContent.setImageBitmap(getFaceBitmap(fileCapture, faceBoundingBox));
+                                    txtPhoto.setVisibility(View.INVISIBLE);
                                 } catch (IOException e) {
-                                    txtPhotoContent.setText(MSG_NA);
+                                    txtPhoto.setText(MSG_NA);
+                                    Log.e(TAG_EVENT, "EXCEPTION: extractFace SuccessListener\n" + e);
                                 }
                             } else {
-                                txtPhotoContent.setText(MSG_NA);
+                                txtPhoto.setText(MSG_NA);
                             }
                             Log.d(TAG_EVENT, "CALLBACK: extractFace SuccessListener");
                         })
@@ -122,22 +127,42 @@ public class ResultActivity extends AppCompatActivity {
         Log.d(TAG_EVENT, "CALLBACK: ResultActivity onCreate");
     }
 
-    private String getDocumentID(String inputStr) {
+    private void handleTextResult(Text text) {
+        String result = text.getText();
+        txtResult.setText(result);
+
         Pattern patNRIC = Pattern.compile(PAT_NRIC);
-        Pattern patPassport = Pattern.compile(PAT_PASSPORT);
-        Matcher matNRIC = patNRIC.matcher(inputStr);
-        Matcher matPassport = patPassport.matcher(inputStr);
-        if (matNRIC.find()){
-            return matNRIC.group();
-        } else if (matPassport.find()) {
-            String result = matPassport.group();
-            if (result.length() >= 3 && result.length() <= 9) {return result;}
+        Matcher matNRIC = patNRIC.matcher(result);
+        if (matNRIC.find()) {
+            txtDocID.setText(matNRIC.group());
+        } else {
+            Pattern patPassport = Pattern.compile(PAT_PASSPORT);
+            Matcher matPassport = patPassport.matcher(result);
+            if (matPassport.find() && (
+                    matPassport.group().length() >= 3 && matPassport.group().length() <= 9)
+            ) {
+                txtDocID.setText(matPassport.group());
+            } else {
+                Pattern patLicense = Pattern.compile(PAT_LICENSE);
+                Matcher matLicense = patLicense.matcher(result);
+                if (matLicense.find()) {
+                    txtDocID.setText(matLicense.group());
+                } else {
+                    txtDocID.setText(MSG_NA);
+                }
+            }
         }
-        return "";
     }
 
-    private int getBoundingBoxArea(Rect bBox) {
-        return bBox.width() * bBox.height();
+    private Rect getLargestBoundingBox(List<Face> faces) {
+        Rect maxBoundingBox = null;
+        int maxArea = 0;
+        for (Face face : faces) {
+            Rect boundingBox = face.getBoundingBox();
+            int area = boundingBox.width() * boundingBox.height();
+            if (area > maxArea) {maxBoundingBox = boundingBox; maxArea = area;}
+        }
+        return maxBoundingBox;
     }
 
     private Bitmap getFaceBitmap(File fileCapture, Rect bBox) throws IOException {
