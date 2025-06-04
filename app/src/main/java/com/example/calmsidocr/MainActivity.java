@@ -53,8 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     // CameraX
     private ImageCapture imageCapture;
-    private Camera camera = null;
-
+    private Camera camera;
     // Non-view data
     private File fileCapture;
 
@@ -80,23 +79,22 @@ public class MainActivity extends AppCompatActivity {
 
         setupCamera();
 
-        if (camera != null) {
-            previewCamera.setOnTouchListener(new View.OnTouchListener() {
-                @SuppressLint("ClickableViewAccessibility")
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() != MotionEvent.ACTION_UP) {
-                        return true;
-                    }
-                    MeteringPointFactory factory = previewCamera.getMeteringPointFactory();
-                    MeteringPoint point = factory.createPoint(event.getX(), event.getY());
-                    FocusMeteringAction action = new FocusMeteringAction.Builder(point).build();
-                    CameraControl cameraControl = camera.getCameraControl();
-                    cameraControl.startFocusAndMetering(action);
+        previewCamera.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() != MotionEvent.ACTION_UP) {
                     return true;
                 }
-            });
-        }
+                MeteringPointFactory factory = previewCamera.getMeteringPointFactory();
+                MeteringPoint point = factory.createPoint(event.getX(), event.getY());
+                FocusMeteringAction action = new FocusMeteringAction.Builder(point).build();
+                CameraControl cameraControl = camera.getCameraControl();
+                cameraControl.startFocusAndMetering(action);
+                Log.d(TAG_EVENT, "CALLBACK: previewCamera onTouch");
+                return true;
+            }
+        });
 
         btnCapture.setOnClickListener(view -> {
             if (camera != null) {
