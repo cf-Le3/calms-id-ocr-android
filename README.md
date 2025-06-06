@@ -19,3 +19,6 @@ The passport number regular expression has been generalized to account for as ma
 - Passport number is at least three characters long and at most nine characters long.
 - Passport number can contain only digits.
 - Passport number can be prefixed and/or suffixed with upper-case letters but must contain only digits in between. 
+
+## Dependencies
+The list of dependencies can be found in the dependencies section of app/build.gradle.kts.
