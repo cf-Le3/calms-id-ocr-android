@@ -26,6 +26,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.exifinterface.media.ExifInterface;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.text.Text;
@@ -38,11 +39,15 @@ import java.util.regex.Pattern;
 
 public class ResultActivity extends AppCompatActivity {
 
+    // View components
     private TextView txtResult;
     private TextView txtDocID;
     private TextView txtName;
     private TextView txtPhoto;
     private ImageView imagePhotoContent;
+
+    // View model
+    private ResultViewModel resultViewModel;
     private File fileCapture;
 
     @Override
@@ -58,11 +63,20 @@ public class ResultActivity extends AppCompatActivity {
         });
 
         // Bind view components.
-        txtResult = findViewById(R.id.txtResultContent);
         txtDocID = findViewById(R.id.txtDocIDContent);
         txtName = findViewById(R.id.txtNameContent);
+        txtResult = findViewById(R.id.txtResultContent);
         txtPhoto = findViewById(R.id.txtPhotoContent);
         imagePhotoContent = findViewById(R.id.imagePhotoContent);
+
+        // Handle view model.
+        resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
+        if (resultViewModel.getDocumentID() != null) { txtDocID.setText(resultViewModel.getDocumentID()); }
+        if (resultViewModel.getName() != null) { txtName.setText(resultViewModel.getName()); }
+        if (resultViewModel.getResult() != null) { txtResult.setText(resultViewModel.getResult()); }
+        if (resultViewModel.getPhotoMsg() != null) { txtPhoto.setText(resultViewModel.getPhotoMsg()); }
+        if (resultViewModel.getFace() != null) { imagePhotoContent.setImageDrawable(resultViewModel.getFace()); }
+        if (resultViewModel.getFileCapture() != null) { fileCapture = resultViewModel.getFileCapture(); }
 
         String incoming = getIntent().getStringExtra(KEY_FILE);
         Log.d(TAG_BUNDLE, "ResultActivity: " + (incoming != null ? incoming : "null"));
@@ -117,6 +131,7 @@ public class ResultActivity extends AppCompatActivity {
             @Override
             public void handleOnBackPressed() {
                 Log.d(TAG_EVENT, "File deleted: " + fileCapture.delete());
+                fileCapture = null;
                 Log.d(TAG_EVENT, "CALLBACK: ResultActivity onBackPressed");
                 launchMainActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(launchMainActivity);
@@ -152,6 +167,19 @@ public class ResultActivity extends AppCompatActivity {
                 }
             }
         }
+
+        txtName.setText(MSG_NA);
+    }
+
+    @Override
+    protected void onStop() {
+        resultViewModel.setDocumentID(txtDocID.getText().toString());
+        resultViewModel.setName(txtName.getText().toString());
+        resultViewModel.setResult(txtResult.getText().toString());
+        resultViewModel.setPhotoMsg(txtResult.getText().toString());
+        resultViewModel.setFace(imagePhotoContent.getDrawable());
+        resultViewModel.setFileCapture(fileCapture);
+        super.onStop();
     }
 
     private Rect getLargestBoundingBox(List<Face> faces) {
