@@ -10,5 +10,12 @@ This could be related to the MainActivity (where the CameraX instance is impleme
 Please test the implementation in the reorientation branch to see if it exhibits the intended behavior.
 
 ## Holographic layers interfere with results accuracy
+When working with a document/card that has a holographic layer, please ensure that there are no reflections obscuring the text.
 
 ## The state of key information extraction
+The application uses simple regular expressions to extract the document ID, which can be a 12 digit Malaysian NRIC (with approrpiately placed hyphens) or a passport number.
+The passport number regular expression has been generalized to account for as many viable international passport numbers as possible, but is not comprehensive.
+- Passport number is at least three characters long and at most nine characters long.
+- Passport number can contain only digits.
+- Passport number can be prefixed and/or suffixed with upper-case letters but must contain only digits in between. 
+The regular expressions used are hard-coded in the Constants.java file. There is no current way for an end-user to customize the desired format for this field.
