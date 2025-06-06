@@ -46,7 +46,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
-    // View data
+    // View components
     private PreviewView previewCamera;
     private ViewGroup layoutCapture;
     private ViewGroup layoutResult;
@@ -55,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
     private ImageCapture imageCapture;
     private Camera camera;
 
-    // Non-view data
+    // View model
+    private MainViewModel mainViewModel;
     private File fileCapture;
-    MainViewModel mainViewModel;
 
 
     @Override
