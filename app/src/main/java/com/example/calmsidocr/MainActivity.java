@@ -6,7 +6,6 @@ import static com.example.calmsidocr.Constants.TAG_EVENT;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.PointF;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -35,6 +34,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -48,14 +48,17 @@ public class MainActivity extends AppCompatActivity {
 
     // View data
     private PreviewView previewCamera;
-    private FloatingActionButton btnCapture;
+    private ViewGroup layoutCapture;
     private ViewGroup layoutResult;
 
     // CameraX
     private ImageCapture imageCapture;
     private Camera camera;
+
     // Non-view data
     private File fileCapture;
+    MainViewModel mainViewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +74,20 @@ public class MainActivity extends AppCompatActivity {
 
         // Bind View components.
         previewCamera = findViewById(R.id.previewCamera);
-        btnCapture = findViewById(R.id.btnCapture);
+        layoutCapture = findViewById(R.id.layoutCapture);
         layoutResult = findViewById(R.id.layoutResult);
+        FloatingActionButton btnCapture = findViewById(R.id.btnCapture);
         Button btnRetry = findViewById(R.id.btnRetry);
         Button btnSubmit = findViewById(R.id.btnSubmit);
         ImageView imagePhoto = findViewById(R.id.imagePhoto);
+
+        // Handle view model.
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        if (mainViewModel.getFileCapture() != null) {
+            fileCapture = mainViewModel.getFileCapture();
+            Glide.with(this).load(fileCapture).into(imagePhoto);
+            setViewVisibility(ViewState.AFTER_CAPTURE);
+        }
 
         setupCamera();
 
@@ -135,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
             Glide.with(view.getContext()).clear(imagePhoto);
             setViewVisibility(ViewState.BEFORE_CAPTURE);
             Log.d(TAG_EVENT, "File deleted: " + fileCapture.delete());
+            fileCapture = null;
             Log.d(TAG_EVENT, "CALLBACK: btnRetry onClick");
         });
 
@@ -146,6 +159,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Log.d(TAG_EVENT, "CALLBACK: MainActivity onCreate");
+    }
+
+    @Override
+    protected void onStop() {
+        mainViewModel.setFileCapture(fileCapture);
+        super.onStop();
     }
 
     private void setupCamera() {
@@ -181,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setViewVisibility(ViewState state) {
-        btnCapture.setVisibility(state == ViewState.BEFORE_CAPTURE ? View.VISIBLE : View.INVISIBLE);
+        layoutCapture.setVisibility(state == ViewState.BEFORE_CAPTURE ? View.VISIBLE : View.INVISIBLE);
         layoutResult.setVisibility(state == ViewState.AFTER_CAPTURE ? View.VISIBLE : View.INVISIBLE);
     }
 }
